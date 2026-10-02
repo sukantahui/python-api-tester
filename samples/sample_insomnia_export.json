@@ -1,0 +1,109 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-10-02T12:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "wrk_12345",
+      "parentId": null,
+      "modified": 1775120000000,
+      "created": 1775120000000,
+      "name": "Sample Insomnia Workspace",
+      "description": "Exported Insomnia Workspace for validation",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_base_123",
+      "parentId": "wrk_12345",
+      "modified": 1775120000000,
+      "created": 1775120000000,
+      "name": "Base Environment",
+      "data": {
+        "baseUrl": "https://httpbin.org",
+        "apiKey": "test-key-insomnia"
+      },
+      "dataPropertyOrder": {
+        "&": ["baseUrl", "apiKey"]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1775120000000,
+      "_type": "environment"
+    },
+    {
+      "_id": "fld_demo_1",
+      "parentId": "wrk_12345",
+      "modified": 1775120000000,
+      "created": 1775120000000,
+      "name": "HTTPBin Tests",
+      "description": "Folder with test requests",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1775120000000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_get_ip",
+      "parentId": "fld_demo_1",
+      "modified": 1775120000000,
+      "created": 1775120000000,
+      "url": "{{baseUrl}}/ip",
+      "name": "Get Origin IP",
+      "description": "Returns client IP address",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json",
+          "id": "pair_1"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1775120000000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_post_json",
+      "parentId": "fld_demo_1",
+      "modified": 1775120000000,
+      "created": 1775120000000,
+      "url": "{{baseUrl}}/post",
+      "name": "Echo POST JSON",
+      "description": "Echoes JSON payload",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"message\": \"Hello from Insomnia Import!\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_2"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1775110000000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    }
+  ]
+}

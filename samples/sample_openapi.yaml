@@ -1,0 +1,85 @@
+openapi: 3.0.3
+info:
+  title: Petstore & Authentication API
+  description: Sample OpenAPI specification for testing PyRestForge ingestion and export.
+  version: 1.0.0
+servers:
+  - url: https://api.petstore.example.com/v1
+    description: Production Server
+  - url: http://localhost:8080/v1
+    description: Local Sandbox
+paths:
+  /auth/token:
+    post:
+      summary: Obtain Bearer Access Token
+      operationId: loginToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: SecretPass123!
+      responses:
+        '200':
+          description: Token granted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: bearer
+  /pets:
+    get:
+      summary: List all pets
+      operationId: listPets
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            type: string
+            enum: [available, pending, sold]
+      responses:
+        '200':
+          description: A paged array of pets
+    post:
+      summary: Create a pet
+      operationId: createPets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, category]
+              properties:
+                name:
+                  type: string
+                  example: "Max"
+                category:
+                  type: string
+                  example: "Dog"
+                tag:
+                  type: string
+      responses:
+        '201':
+          description: Null response

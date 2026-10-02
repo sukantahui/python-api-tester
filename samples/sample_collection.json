@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.0.0",
+  "workspace": {
+    "id": "ws_auth_payments_01",
+    "name": "E-Commerce & Payment API",
+    "description": "Comprehensive API collection for authentication, product catalog, and Stripe-like payment processing.",
+    "environments": {
+      "base": {
+        "apiVersion": "v1",
+        "timeout": 30,
+        "defaultLimit": 20
+      },
+      "sub_environments": [
+        {
+          "name": "Local Development",
+          "variables": {
+            "baseUrl": "http://localhost:8000",
+            "apiKey": "dev_local_secret_key_123",
+            "enableMock": "true"
+          }
+        },
+        {
+          "name": "Staging",
+          "variables": {
+            "baseUrl": "https://staging.api.myshop.com",
+            "apiKey": "stg_live_secret_key_456",
+            "enableMock": "false"
+          }
+        },
+        {
+          "name": "Production",
+          "variables": {
+            "baseUrl": "https://api.myshop.com",
+            "apiKey": "{{SECRET:prod_stripe_key}}",
+            "enableMock": "false"
+          }
+        }
+      ]
+    },
+    "folders": [
+      {
+        "id": "fld_auth",
+        "name": "Authentication & Users",
+        "description": "User registration, login token generation, and profile fetching",
+        "requests": [
+          {
+            "id": "req_login",
+            "name": "User Login",
+            "method": "POST",
+            "url": "{{baseUrl}}/{{apiVersion}}/auth/login",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "active": true
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "active": true
+              }
+            ],
+            "auth": {
+              "type": "none"
+            },
+            "body": {
+              "mode": "json",
+              "raw": "{\n  \"username\": \"developer@example.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "tests": "def test_login(res, env):\n    assert res.status_code == 200, f\"Expected 200 OK, got {res.status_code}\"\n    data = res.json()\n    assert \"access_token\" in data, \"Response missing access_token\"\n    env.set(\"jwt_token\", data[\"access_token\"])\n    print(\"✓ Successfully captured JWT token into environment!\")\n"
+          },
+          {
+            "id": "req_get_profile",
+            "name": "Get Current Profile",
+            "method": "GET",
+            "url": "{{baseUrl}}/{{apiVersion}}/users/me",
+            "headers": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "active": true
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{jwt_token}}"
+            },
+            "body": {
+              "mode": "none"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

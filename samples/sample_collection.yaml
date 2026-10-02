@@ -1,0 +1,118 @@
+schema_version: "1.0.0"
+workspace:
+  id: "ws_auth_payments_01"
+  name: "E-Commerce & Payment API"
+  description: "Comprehensive API collection for authentication, product catalog, and Stripe-like payment processing."
+  environments:
+    base:
+      apiVersion: "v1"
+      timeout: 30
+      defaultLimit: 20
+    sub_environments:
+      - name: "Local Development"
+        variables:
+          baseUrl: "http://localhost:8000"
+          apiKey: "dev_local_secret_key_123"
+          enableMock: "true"
+      - name: "Staging"
+        variables:
+          baseUrl: "https://staging.api.myshop.com"
+          apiKey: "stg_live_secret_key_456"
+          enableMock: "false"
+      - name: "Production"
+        variables:
+          baseUrl: "https://api.myshop.com"
+          apiKey: "{{SECRET:prod_stripe_key}}"
+          enableMock: "false"
+  folders:
+    - id: "fld_auth"
+      name: "Authentication & Users"
+      description: "User registration, login token generation, and profile fetching"
+      requests:
+        - id: "req_login"
+          name: "User Login"
+          method: "POST"
+          url: "{{baseUrl}}/{{apiVersion}}/auth/login"
+          headers:
+            - key: "Content-Type"
+              value: "application/json"
+              active: true
+            - key: "Accept"
+              value: "application/json"
+              active: true
+          auth:
+            type: "none"
+          body:
+            mode: "json"
+            raw: |
+              {
+                "username": "developer@example.com",
+                "password": "Password123!"
+              }
+          tests: |
+            def test_login(res, env):
+                assert res.status_code == 200, f"Expected 200 OK, got {res.status_code}"
+                data = res.json()
+                assert "access_token" in data, "Response missing access_token"
+                env.set("jwt_token", data["access_token"])
+                print("✓ Successfully captured JWT token into environment!")
+        - id: "req_get_profile"
+          name: "Get Current Profile"
+          method: "GET"
+          url: "{{baseUrl}}/{{apiVersion}}/users/me"
+          headers:
+            - key: "Accept"
+              value: "application/json"
+              active: true
+          auth:
+            type: "bearer"
+            token: "{{jwt_token}}"
+          body:
+            mode: "none"
+    - id: "fld_payments"
+      name: "Payments & Charges"
+      description: "Stripe-compatible payment charges and refund triggers"
+      requests:
+        - id: "req_create_charge"
+          name: "Create Payment Charge"
+          method: "POST"
+          url: "{{baseUrl}}/{{apiVersion}}/charges"
+          headers:
+            - key: "Content-Type"
+              value: "application/json"
+              active: true
+            - key: "X-Api-Key"
+              value: "{{apiKey}}"
+              active: true
+          auth:
+            type: "bearer"
+            token: "{{jwt_token}}"
+          body:
+            mode: "json"
+            raw: |
+              {
+                "amount": 4999,
+                "currency": "usd",
+                "idempotency_key": "{{$guid}}",
+                "customer_email": "{{$randomEmail}}",
+                "description": "Premium Subscription Tier"
+              }
+          tests: |
+            def test_charge(res, env):
+                assert res.status_code in (200, 201)
+                data = res.json()
+                assert "charge_id" in data
+                env.set("last_charge_id", data["charge_id"])
+        - id: "req_get_charge"
+          name: "Get Charge Status"
+          method: "GET"
+          url: "{{baseUrl}}/{{apiVersion}}/charges/{{last_charge_id}}"
+          headers:
+            - key: "X-Api-Key"
+              value: "{{apiKey}}"
+              active: true
+          auth:
+            type: "bearer"
+            token: "{{jwt_token}}"
+          body:
+            mode: "none"
